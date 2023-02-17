@@ -5,9 +5,6 @@ import axios from "axios";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 
-
-
-
 function YeniMusteri() {
 
   const navigate = useNavigate();
@@ -22,67 +19,66 @@ function YeniMusteri() {
   const [adress, setAdress] = useState();
   const [city, setCity] = useState();
 
+  const [cities, setCities] = useState([]);
+  const [genders, setGenders] = useState([]);
+
+
   const myButtonClick = async () => {
     let requestBody = {
-      MusteriAdi:name,
-      MusteriSoyadi:surname,
-      DogumTarihi:birthday,
-      Cinsiyet:gender,
-      Adres:adress,
-      Sehir:city
+      MusteriAdi: name,
+      MusteriSoyadi: surname,
+      DogumTarihi: birthday,
+      Cinsiyet: gender,
+      Adres: adress,
+      Sehir: city
 
     }
-    
- 
 
-  const response = await axios.post (
-    'https://private-4bed44-pinarysn1.apiary-mock.com/musteri',
-
-    requestBody
-  );
-  // alert(
-  //    "Service Request:"+JSON.stringify(requestBody)
-  //    +
-  //    "Service Request:"+JSON.stringify(response)
-  // )
- let data = response.data.message;
-  alert(data);
-  navigate('/musteri', {replace: true});
-
-
-  // setName('');
-  // setSurName('');
-  // setBirthday('');
-  // setGender('');
-  // setAdress('');
-  // setCity('');
-}
+    const response = await axios.post(
+      'https://private-4bed44-pinarysn1.apiary-mock.com/musteri',
+      requestBody
+    );
+    // alert(
+    //    "Service Request:"+JSON.stringify(requestBody)
+    //    +
+    //    "Service Request:"+JSON.stringify(response)
+    // )
+    let data = response.data.message;
+    alert(data);
+    navigate('/musteri', { replace: true });
+  }
 
   useEffect(() => {
 
     if (!localStorage.getItem("userName")) {
       navigate('/login', { replace: true });
     }
-
-  }, [])
-   
-
-  useEffect(() => { // sayfa açılır açılmaz çalışması gereken yer.
-
-    const getAllCustomersInfo = async () => {
+    //ŞEHİR
+    const getCities = async () => {
       let response = await axios.get(
-        'https://private-4bed44-pinarysn1.apiary-mock.com/musteri'
+        'https://private-488235-sehirpnr.apiary-mock.com/sehir'
+        // 'https://private-a420f-cerenozturk.apiary-mock.com/sehir'
       );
 
-      console.log("getAllCustomersInfo" + response.data.MusteriListesi);
+      // console.log("getCities" + response.data.SehirListesi);
+      setCities(response.data.SehirListesi);
+    }
+    // call the function
 
-      setAllCustomers(response.data.MusteriListesi);
+    //CİNSİYET
+    const getGenders = async () => {
+      let response = await axios.get(
+        'https://private-85d1b-cinsiyet2.apiary-mock.com/cinsiyet'
+      );
+      // console.log("getCities" + response.data.SehirListesi);
+      setGenders(response.data.CinsiyetListesi);
 
     }
     // call the function
-    getAllCustomersInfo().catch(console.error);
-
+    getCities().catch(console.error);
+    getGenders().catch(console.error);
   }, [])
+
   return (
 
     <>
@@ -406,71 +402,80 @@ function YeniMusteri() {
                         <div className="form-group form-md-line-input">
                           <label className="col-md-2 control-label" htmlFor="dtBirthDate">Doğum Tarihi</label>
                           <div className="col-md-10">
-                            <input autoComplete="off" type="text" className="form-control" id="dtBirthDate" name="dtBirthDate" onChange={e => setBirthday(e.target.value)} placeholder="GG/AA/YYYY formatında giriniz"  />
+                            <input autoComplete="off" type="text" className="form-control" id="dtBirthDate" name="dtBirthDate" onChange={e => setBirthday(e.target.value)} placeholder="GG/AA/YYYY formatında giriniz" />
+                            <div className="form-control-focus">
+                            </div>
+                          </div>
+                        </div>
+
+
+                        <div className="form-group form-md-line-input">
+                          <label className="col-md-2 control-label" htmlFor="rdGender" >Cinsiyet</label>
+                          <div className="col-md-10">
+
+                            <div className="md-radio-inline" >{
+
+
+                              genders.map((data) => (
+                                <div className="md-radio">
+                                  <input type="radio" id={data.ID} name="rdGender" className="md-radiobtn" onChange={e => setGender(e.target.value)} />
+                                  <label htmlFor={data.ID} > {data.Cinsiyet}
+                                    <span />
+                                    <span className="check" />
+                                    <span className="box" />
+                                  </label>
+                                </div>
+                              )
+                              )
+                            }
+
+                            </div>
+                          </div>
+                        </div>
+
+                        
+                        <div className="form-group form-md-line-input ">
+                          <label className="col-md-2 control-label" htmlFor="txtAdress">Adres</label>
+                          <div className="col-md-10">
+                            <textarea required maxLength={500} className="form-control" id="txtAdress" rows={3} placeholder="Açık Adresiniz" onChange={e => setAdress(e.target.value)} defaultValue={""} />
                             <div className="form-control-focus">
                             </div>
                           </div>
                         </div>
                         <div className="form-group form-md-line-input">
-                          <label className="col-md-2 control-label" htmlFor="rdGender" >Cinsiyet</label>
+                          <label className="col-md-2 control-label" htmlFor="cmbCity">Sehir</label>
                           <div className="col-md-10">
-                            <div className="md-radio-inline" id="rdGender" name="rdGender">
-                              <div className="md-radio">
-                                <input type="radio" id="radio53" name="rdGender" className="md-radiobtn" onChange={e => setGender('k')} />
-                                <label htmlFor="radio53">
-                                  <span />
-                                  <span className="check" />
-                                  <span className="box" />
-                                  Kadın </label>
-                              </div>
-                              <div className="md-radio ">
-                                <input type="radio" id="radio54" name="rdGender" className="md-radiobtn" onChange={e => setGender('e')}  />
-                                <label htmlFor="radio54">
-                                  <span />
-                                  <span className="check" />
-                                  <span className="box" />
-                                  Erkek </label>
-                              </div>
+
+
+
+
+                            <select className="form-control" id="cmbCity" name="cmbCity" onChange={e => setCity(e.target.value)}>
+                              <option value>Lütfen Seçiniz</option>
+                              {
+                                cities.map((data) => (
+                                  <option value={data.SehirID}>{data.Sehirler}</option>
+                                )
+                                )
+
+                              }
+
+                            </select>
+                            <div className="form-control-focus">
                             </div>
                           </div>
                         </div>
-                      </div>
-                      <div className="form-group form-md-line-input ">
-                        <label className="col-md-2 control-label" htmlFor="txtAdress">Adres</label>
-                        <div className="col-md-10">
-                          <textarea required maxLength={500} className="form-control" id="txtAdress" rows={3} placeholder="Açık Adresiniz" onChange={e => setAdress(e.target.value)} defaultValue={""} />
-                          <div className="form-control-focus">
-                          </div>
-                        </div>
-                      </div>
-                      <div className="form-group form-md-line-input">
-                        <label className="col-md-2 control-label" htmlFor="cmbCity">Sehir</label>
-                        <div className="col-md-10">
-                          <select className="form-control" id="cmbCity" name="cmbCity" placeholder="Açık Adresiniz" onChange={e => setCity(e.target.value)}>
-                            <option value>Lütfen Seçiniz</option>
-                            <option value>İstanbul</option>
-                            <option value>İzmir</option>
-                            <option value>Ankara</option>
-                            <option value>Çanakkale</option>
-                            <option value>Tekirdağ</option>
-                            <option value>Bursa</option>
-                            <option value>Balıkesir</option>
-                          </select>
-                          <div className="form-control-focus">
-                          </div>
-                        </div>
-                      </div>
-                      <div className="form-actions">
-                        <div className="row">
-                          <div className="col-md-offset-2 col-md-10">
-                           
-                            <a className='btn blue' onClick={()=>myButtonClick()}>Kaydet</a>
-                            {/* <a className='btn default' onClick={()=>temizle()}>Temizle</a> */}
+                        <div className="form-actions">
+                          <div className="row">
+                            <div className="col-md-offset-2 col-md-10">
 
-                          
+                              <a className='btn blue' onClick={() => myButtonClick()}>Kaydet</a>
+                              {/* <a className='btn default' onClick={()=>temizle()}>Temizle</a> */}
+
+
+                            </div>
                           </div>
                         </div>
-                      </div>
+                        </div>
                     </form>
                   </div>
                 </div>
@@ -487,10 +492,6 @@ function YeniMusteri() {
               </div>
               {/* END SAMPLE FORM PORTLET*/}
             </div>
-
-
-
-
             {/* END PAGE CONTENT INNER */}
           </div>
         </div>
